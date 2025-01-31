@@ -9,48 +9,54 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: ContactListScreen(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
+class ContactListScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _ContactListScreenState createState() => _ContactListScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController numberController = TextEditingController();
-  List<Map<String, String>> dataList = [];
+class _ContactListScreenState extends State<ContactListScreen> {
+  final TextEditingController nameController
+                            = TextEditingController();
+  final TextEditingController numberController
+                            = TextEditingController();
+  List<Map<String, String>> contactList = [];
 
-  void addItem() {
-    String name = nameController.text.trim();
-    String number = numberController.text.trim();
+  void addContact() {
+    String name =
+                nameController.text.trim();
+    String number =
+                numberController.text.trim();
     if (name.isNotEmpty && number.isNotEmpty) {
       setState(() {
-        dataList.add({'name': name, 'number': number});
+        contactList.add({'name': name,
+                        'number': number});
       });
       nameController.clear();
       numberController.clear();
     }
   }
 
-  void deleteItem(int index) {
+  void deleteContact(int index) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Confirm Deletion"),
-        content: Text("Are you sure you want to delete this item?"),
+        title: Text("Confirmation"),
+        content: Text("Are you sure for Delete?"),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () =>
+                           Navigator.of(context).pop(),
             child: Text("Cancel"),
           ),
           TextButton(
             onPressed: () {
               setState(() {
-                dataList.removeAt(index);
+                contactList.removeAt(index);
               });
               Navigator.of(context).pop();
             },
@@ -64,36 +70,83 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Flutter List App")),
+
+
+      appBar: AppBar(
+        title: Text("Contact List"),
+        backgroundColor: Colors.blueGrey,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
+
+
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: "Name"),
+              decoration: InputDecoration(
+                labelText: "Name",
+                border: OutlineInputBorder(),
+              ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
+
+
             TextField(
               controller: numberController,
-              decoration: InputDecoration(labelText: "Number"),
-              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: "Number",
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.phone,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
+
+
             ElevatedButton(
-              onPressed: addItem,
+              onPressed: addContact,
               child: Text("Add"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
             ),
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: dataList.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(dataList[index]['name']!),
-                      subtitle: Text(dataList[index]['number']!),
-                      onLongPress: () => deleteItem(index),
+              itemCount: contactList.length,
+              itemBuilder: (context, index) {
+              return Card(
+              child: ListTile(
+              leading: CircleAvatar(
+              child: Icon(Icons.person),
+                      ),
+
+
+                      title: Text(
+                        contactList[index]['name']!,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+
+                      subtitle: Text(contactList[index]['number']!),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+
+
+                          IconButton(
+                            icon: Icon(Icons.call, color: Colors.blue),
+                            onPressed: () {
+
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => deleteContact(index),
+                          ),
+                        ],
+                      ),
+                      onLongPress: () => deleteContact(index),
                     ),
                   );
                 },
