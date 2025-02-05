@@ -1,160 +1,92 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ContactListScreen(),
+      home: AddEmployeeScreen(),
     );
   }
 }
 
-class ContactListScreen extends StatefulWidget {
+class AddEmployeeScreen extends StatefulWidget {
   @override
-  _ContactListScreenState createState() => _ContactListScreenState();
+  _AddEmployeeScreenState createState() => _AddEmployeeScreenState();
 }
 
-class _ContactListScreenState extends State<ContactListScreen> {
-  final TextEditingController nameController
-                            = TextEditingController();
-  final TextEditingController numberController
-                            = TextEditingController();
-  List<Map<String, String>> contactList = [];
+class _AddEmployeeScreenState
+    extends State<AddEmployeeScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
+  final _salaryController = TextEditingController();
 
-  void addContact() {
-    String name =
-                nameController.text.trim();
-    String number =
-                numberController.text.trim();
-    if (name.isNotEmpty && number.isNotEmpty) {
-      setState(() {
-        contactList.add({'name': name,
-                        'number': number});
-      });
-      nameController.clear();
-      numberController.clear();
+  void _addEmployee() {
+    if (_formKey.currentState!.validate()) {
+      print('Name: ${_nameController.text},'
+          ' Age: ${_ageController.text},'
+          ' Salary: ${_salaryController.text}');
     }
-  }
-
-  void deleteContact(int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Confirmation"),
-        content: Text("Are you sure for Delete?"),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                           Navigator.of(context).pop(),
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                contactList.removeAt(index);
-              });
-              Navigator.of(context).pop();
-            },
-            child: Text("Delete", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Add Employee')),
 
 
-      appBar: AppBar(
-        title: Text("Contact List"),
-        backgroundColor: Colors.blueGrey,
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
 
 
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: "Name",
-                border: OutlineInputBorder(),
+                decoration: InputDecoration(labelText: 'Name'),
+                validator: (value) => value!.isEmpty ? 'Enter a name' : null,
               ),
-            ),
-            SizedBox(height: 5),
 
 
-            TextField(
-              controller: numberController,
-              decoration: InputDecoration(
-                labelText: "Number",
-                border: OutlineInputBorder(),
+              TextFormField(
+                controller: _ageController,
+                decoration: InputDecoration(labelText: 'Age'),
+                keyboardType: TextInputType.number,
+                validator: (value) => value!.isEmpty || int.tryParse(value) == null ? 'Enter a valid age' : null,
               ),
-              keyboardType: TextInputType.phone,
-            ),
-            SizedBox(height: 5),
 
 
-            ElevatedButton(
-              onPressed: addContact,
-              child: Text("Add"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+              TextFormField(
+                controller: _salaryController,
+                decoration: InputDecoration(labelText: 'Salary'),
+                keyboardType: TextInputType.number,
+                validator: (value) => value!.isEmpty || double.tryParse(value) == null ? 'Enter a valid salary' : null,
               ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-              itemCount: contactList.length,
-              itemBuilder: (context, index) {
-              return Card(
-              child: ListTile(
-              leading: CircleAvatar(
-              child: Icon(Icons.person),
-                      ),
 
 
-                      title: Text(
-                        contactList[index]['name']!,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _addEmployee,
+                child: Text('Add Employee'),
 
 
-                      subtitle: Text(contactList[index]['number']!),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-
-
-                          IconButton(
-                            icon: Icon(Icons.call, color: Colors.blue),
-                            onPressed: () {
-
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => deleteContact(index),
-                          ),
-                        ],
-                      ),
-                      onLongPress: () => deleteContact(index),
-                    ),
-                  );
-                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
+    _salaryController.dispose();
+    super.dispose();
   }
 }
